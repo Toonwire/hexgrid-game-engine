@@ -1,5 +1,7 @@
 {
     "name": "@toonwire/hexgrid-game-engine",
+    "main": "dist/game.js",
+    "types": "dist/game.d.ts",
     "scripts": {
       "build": "tsc"
     },
