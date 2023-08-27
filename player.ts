@@ -1,4 +1,5 @@
 import { HexOwner, PlayerColor } from './constants';
+import { generateGUID } from './guid';
 import Transaction, { PlayerTransaction } from './transaction';
 
 type NeighborCell = {
@@ -26,8 +27,8 @@ class Player {
   transaction: Transaction | null;
   turn: (myCells: PlayerCell[]) => PlayerTransaction;
 
-  constructor(id: string, name: string, color: PlayerColor, turn: (myCells: PlayerCell[]) => PlayerTransaction) {
-    this.id = id;
+  constructor(name: string, color: PlayerColor, turn: (myCells: PlayerCell[]) => PlayerTransaction) {
+    this.id = generateGUID();
     this.name = name;
     this.color = color;
     this.ownedHexagonCount = 0;
@@ -44,6 +45,12 @@ class Player {
 
   setTransaction(transaction: Transaction) {
     this.transaction = transaction;
+  }
+
+  takeTurn(myCells: PlayerCell[]) {
+    const playerTransaction = this.turn(myCells);
+    const transaction = Transaction.fromPlayerTransaction(this.id, playerTransaction);
+    this.setTransaction(transaction);
   }
 }
 
