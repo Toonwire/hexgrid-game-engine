@@ -41,19 +41,21 @@ function turn(myCells: PlayerCell[]): PlayerTransaction {
     .filter((n) => n.owner !== HexOwner.OWN)
     .sort((a, b) => a.resources - b.resources)[0];
 
+  let transferAmount = 1;
+
   // if the attacker cannot take over the target, transfer half of its resources to the target
   if (target.resources > attacker.resources - 1) {
-    return {
-      fromId: attacker.id,
-      toId: target.id,
-      transferAmount: attacker.resources / 2 > 0 ? attacker.resources / 2 : 1,
-    };
+    transferAmount = attacker.resources / 2 > 0 ? attacker.resources / 2 : 1;
   }
   // otherwise, transfer resources from attacker to target so that they end up splitting the resources
+  else {
+    transferAmount = target.resources + (attacker.resources - target.resources - 1) / 2;
+  }
+
   return {
     fromId: attacker.id,
     toId: target.id,
-    transferAmount: target.resources + (attacker.resources - target.resources - 1) / 2,
+    transferAmount: Math.round(transferAmount),
   };
 }
 
