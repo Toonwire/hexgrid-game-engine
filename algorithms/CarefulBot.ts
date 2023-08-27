@@ -34,7 +34,12 @@ function turn(myCells: PlayerCell[]): PlayerTransaction {
         b.neighbors.filter((n) => n.owner === HexOwner.OWN).length -
         a.neighbors.filter((n) => n.owner === HexOwner.OWN).length,
     );
-  const attacker = attackerCells[0];
+
+  // from the attacker cells with the most owned neighbor cells, get the one with the weakest neighbor
+  const maxOwnedNeighbors = attackerCells[0].neighbors.filter((n) => n.owner === HexOwner.OWN).length;
+  const attacker = attackerCells
+    .filter((cell) => cell.neighbors.filter((n) => n.owner === HexOwner.OWN).length === maxOwnedNeighbors)
+    .sort((a, b) => a.resources - b.resources)[0];
 
   // target the unowned neighbor with the least resources
   const target = attacker.neighbors
