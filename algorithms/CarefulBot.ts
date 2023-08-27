@@ -37,29 +37,35 @@ function turn(myCells: PlayerCell[]): PlayerTransaction {
 
   // from the attacker cells with the most owned neighbor cells, get the one with the weakest neighbor
   const maxOwnedNeighbors = attackerCells[0].neighbors.filter((n) => n.owner === HexOwner.OWN).length;
-  const attacker = attackerCells
-    .filter((cell) => cell.neighbors.filter((n) => n.owner === HexOwner.OWN).length === maxOwnedNeighbors)
-    .sort((a, b) => a.resources - b.resources)[0];
+  const attackersWithMaxOwnedNeighbors = attackerCells.filter(
+    (cell) => cell.neighbors.filter((n) => n.owner === HexOwner.OWN).length === maxOwnedNeighbors,
+  );
 
-  // target the unowned neighbor with the least resources
-  const target = attacker.neighbors
-    .filter((n) => n.owner !== HexOwner.OWN)
-    .sort((a, b) => a.resources - b.resources)[0];
+  let weakestTarget = null;
+  let attacker = null;
+  for (const attackerCell of attackersWithMaxOwnedNeighbors) {
+    let potentialTarget = attackerCell.neighbors.sort((n1, n2) => n1.resources - n2.resources)[0];
+
+    if (!weakestTarget || potentialTarget.resources < weakestTarget.resources) {
+      weakestTarget = potentialTarget;
+      attacker = attackerCell;
+    }
+  }
 
   let transferAmount = 1;
 
   // if the attacker cannot take over the target, transfer half of its resources to the target
-  if (target.resources > attacker.resources - 1) {
+  if (weakestTarget.resources > attacker.resources - 1) {
     transferAmount = attacker.resources / 2 > 0 ? attacker.resources / 2 : 1;
   }
   // otherwise, transfer resources from attacker to target so that they end up splitting the resources
   else {
-    transferAmount = target.resources + (attacker.resources - target.resources - 1) / 2;
+    transferAmount = weakestTarget.resources + (attacker.resources - weakestTarget.resources - 1) / 2;
   }
 
   return {
     fromId: attacker.id,
-    toId: target.id,
+    toId: weakestTarget.id,
     transferAmount: Math.round(transferAmount),
   };
 }
