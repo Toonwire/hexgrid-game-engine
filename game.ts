@@ -2,14 +2,30 @@ import Hexgrid from './hexgrid';
 import Player, { PlayerCell } from './player';
 import { HexOwner, PlayerColors } from './constants';
 import Transaction from './transaction';
+import Hexagon from './hexagon';
 
-enum GameError {
+export enum GameError {
   UPDATE_GAME_OVER = 'Cannot update game, game is over',
   ADD_PLAYER_BEYOND_MAX = 'Cannot add more players, maximum players reached',
   ADD_PLAYER_ONGOING_GAME = 'Cannot add player to an ongoing game',
   REMOVE_PLAYER_NOT_FOUND = 'Cannot remove player that is not in the game',
   REMOVE_PLAYER_ONGOING_GAME = 'Cannot remove player from an ongoing game',
 }
+
+export type GameState = {
+  hexagons: Hexagon[];
+  players: Map<string, Player>;
+};
+
+export type PlayerStats = {
+  id: string;
+  name: string;
+  hexagonCount: number;
+  resources: number;
+  isAlive: boolean;
+  roundsSurvived: number;
+  exceptions: number;
+};
 
 class Game {
   idToPlayer: Map<string, Player>;
@@ -39,7 +55,7 @@ class Game {
     if (!removed) throw GameError.REMOVE_PLAYER_NOT_FOUND;
   }
 
-  getCurrentState() {
+  getCurrentState(): GameState {
     return {
       hexagons: this.hexgrid.hexagons,
       players: this.idToPlayer,
@@ -49,7 +65,7 @@ class Game {
   /**
    * Returns true if all hexagons in the hexgrid have the same owner, otherwise false
    */
-  isGameOver() {
+  isGameOver(): boolean {
     const firstHexagonOwnerId = this.hexgrid.hexagons[0].ownerId;
     return this.hexgrid.hexagons.every((hexagon) => hexagon.ownerId === firstHexagonOwnerId);
   }
@@ -130,7 +146,7 @@ class Game {
       });
   }
 
-  getPlayerData() {
+  getPlayerData(): PlayerStats[] {
     var playerData = [];
     for (const player of this.idToPlayer.values()) {
       const ownedHexagons = this.hexgrid.hexagons.filter((hexagon) => hexagon.ownerId == player.id);
