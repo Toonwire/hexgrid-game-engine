@@ -15,7 +15,7 @@ let players: Player[] = [];
 for (let i = 0; i < numPlayers; i++) {
   const playerId = `p${i}`;
   // idToPlayers.set(playerId, new Player(playerId, 'player' + i, PlayerColors[i]));
-  players.push(new Player(playerId, 'player' + i, PlayerColors[i], AggressiveBot.turn));
+  players.push(new Player('player' + i, PlayerColors[i], AggressiveBot.turn));
 }
 
 // const hexgrid = new Hexgrid(Array.from(idToPlayers.values()));
