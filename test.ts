@@ -4,7 +4,7 @@ import Player, { PlayerCell } from './player';
 import Game from './game';
 
 import DefaultBot from './algorithms/DefaultBot';
-import AggressiveBot from './algorithms/AggressiveBot';
+import CarefulBot from './algorithms/CarefulBot';
 import Transaction from './transaction';
 
 const numPlayers = 1;
@@ -15,7 +15,7 @@ let players: Player[] = [];
 for (let i = 0; i < numPlayers; i++) {
   const playerId = `p${i}`;
   // idToPlayers.set(playerId, new Player(playerId, 'player' + i, PlayerColors[i]));
-  players.push(new Player('player' + i, PlayerColors[i], AggressiveBot.turn));
+  players.push(new Player('player' + i, PlayerColors[i], CarefulBot.turn));
 }
 
 // const hexgrid = new Hexgrid(Array.from(idToPlayers.values()));
