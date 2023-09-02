@@ -31,6 +31,8 @@ function doesOwnedPathExists(hexagonIdDict: Map<string, Hexagon>, fromHexId: str
     return false;
   }
 
+  console.log(hexagonIdDict);
+
   const visited = {};
   const stack = [fromHexagon];
 
@@ -43,7 +45,10 @@ function doesOwnedPathExists(hexagonIdDict: Map<string, Hexagon>, fromHexId: str
     if (currentHexagon.id === toHexagon.id) return true;
     if (currentHexagon.ownerId !== fromHexagon.ownerId) continue;
     visited[currentHexagon.id] = true;
+    let c = 0;
     for (const neighbor of currentHexagon.neighbors) {
+      console.log('neighbor #' + c);
+      console.log(neighbor);
       if (!visited[neighbor.id] && neighbor.ownerId === fromHexagon.ownerId) {
         stack.push(hexagonIdDict[neighbor.id]);
       }
