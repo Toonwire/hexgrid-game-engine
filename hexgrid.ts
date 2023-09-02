@@ -97,7 +97,7 @@ class Hexgrid {
   hexagons: Hexagon[];
   hexagonIdMap: Map<string, Hexagon>;
 
-  constructor(players: Player[], neighborWraparound = NeighborWraparound.WRAP) {
+  constructor(players: Player[], neighborWraparound: NeighborWraparound = NeighborWraparound.WRAP) {
     let numRings = 6; // minimum grid size
     let numPlayerRings = 1; // number of rings containing player cells
     let roomForPlayers = 1 + 6 * numPlayerRings; // room for center + the capacity of the ring
