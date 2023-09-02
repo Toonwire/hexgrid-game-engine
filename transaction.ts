@@ -40,45 +40,12 @@ function doesOwnedPathExists(hexagonIdDict: Map<string, Hexagon>, fromHexId: str
     if (currentHexagon.ownerId !== fromHexagon.ownerId) continue;
     visited[currentHexagon.id] = true;
     for (const neighbor of currentHexagon.neighbors) {
-      if (!visited[neighbor.id]) {
+      if (!visited[neighbor.id] && neighbor.ownerId === fromHexagon.ownerId) {
         stack.push(hexagonIdDict[neighbor.id]);
       }
     }
   }
 
-  return false;
-}
-
-/**
- * Runs a DFS search for a path between the two hexagons, owned by the same player.
- * Returns true if such a path exists, otherwise false
- */
-function _ownedPathExists(hexagonIdDict: Map<string, Hexagon>, fromHexId: string, toHexId: string) {
-  var stack = [];
-  var explored = new Set();
-
-  const startHexId = fromHexId;
-  const endHexId = toHexId;
-
-  stack.push(startHexId);
-
-  while (stack.length > 0) {
-    var currentHexId = stack.pop();
-    explored.add(currentHexId);
-
-    if (currentHexId === endHexId)
-      // search concluded, path exists
-      return true;
-
-    hexagonIdDict[currentHexId].neighbors
-      .filter(
-        (neighborId) =>
-          !explored.has(neighborId) && hexagonIdDict[neighborId].ownerId === hexagonIdDict[endHexId].ownerId,
-      )
-      .forEach((neighborId) => {
-        stack.push(neighborId);
-      });
-  }
   return false;
 }
 
@@ -119,8 +86,7 @@ class Transaction {
     if (fromHexagon === toHexagon) throw TransactionError.SAME_HEXAGON;
     if (
       fromHexagon.ownerId === toHexagon.ownerId &&
-      // !doesOwnedPathExists(hexgrid.hexagonIdMap, this.fromHexId, this.toHexId)
-      !_ownedPathExists(hexgrid.hexagonIdMap, this.fromHexId, this.toHexId)
+      !doesOwnedPathExists(hexgrid.hexagonIdMap, this.fromHexId, this.toHexId)
     ) {
       throw TransactionError.OWNED_HEXAGONS_NOT_CONNECTED;
     }
