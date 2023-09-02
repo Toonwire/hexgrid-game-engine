@@ -31,8 +31,9 @@ function turn(myCells: PlayerCell[]): PlayerTransaction {
     .filter((cell) => cell.neighbors.some((n) => n.owner !== HexOwner.OWN))
     .sort(
       (a, b) =>
-        b.neighbors.filter((n) => n.owner === HexOwner.OWN).length -
-        a.neighbors.filter((n) => n.owner === HexOwner.OWN).length,
+        b.neighbors.filter((n) => n.owner === HexOwner.OWN || (n.owner === HexOwner.NONE && n.resources === 0))
+          .length -
+        a.neighbors.filter((n) => n.owner === HexOwner.OWN || (n.owner === HexOwner.NONE && n.resources === 0)).length,
     );
 
   // from the attacker cells with the most owned neighbor cells, get the one with the weakest neighbor
@@ -42,31 +43,25 @@ function turn(myCells: PlayerCell[]): PlayerTransaction {
   );
 
   let weakestTarget = null;
-  let attacker = null;
   for (const attackerCell of attackersWithMaxOwnedNeighbors) {
-    let potentialTarget = attackerCell.neighbors.sort((n1, n2) => n1.resources - n2.resources)[0];
+    let potentialTarget = attackerCell.neighbors
+      .filter((n) => n.owner !== HexOwner.OWN)
+      .sort((n1, n2) => n1.resources - n2.resources)[0];
 
     if (!weakestTarget || potentialTarget.resources < weakestTarget.resources) {
       weakestTarget = potentialTarget;
-      attacker = attackerCell;
     }
   }
 
-  let transferAmount = 1;
-
-  // if the attacker cannot take over the target, transfer half of its resources to the target
-  if (weakestTarget.resources > attacker.resources - 1) {
-    transferAmount = attacker.resources / 2 > 0 ? attacker.resources / 2 : 1;
-  }
-  // otherwise, transfer resources from attacker to target so that they end up splitting the resources
-  else {
-    transferAmount = weakestTarget.resources + (attacker.resources - weakestTarget.resources - 1) / 2;
-  }
+  // find the attacker with the weakest target as neighbor and has the most resources
+  const strongestAttacker = attackersWithMaxOwnedNeighbors
+    .filter((cell) => cell.neighbors.some((n) => n.id === weakestTarget.id))
+    .sort((a, b) => b.resources - a.resources)[0];
 
   return {
-    fromId: attacker.id,
+    fromId: strongestAttacker.id,
     toId: weakestTarget.id,
-    transferAmount: Math.round(transferAmount),
+    transferAmount: strongestAttacker.resources - 1,
   };
 }
 
