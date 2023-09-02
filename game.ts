@@ -40,7 +40,7 @@ class Game {
    */
   setup() {
     this.hexgrid = new Hexgrid(Array.from(this.idToPlayer.values()));
-    this._updatePlayerStats(true);
+    this._updatePlayerStats();
   }
 
   addPlayer(player: Player) {
@@ -102,15 +102,18 @@ class Game {
     }
 
     Transaction.executeAll(validPlayerTransactions, this.hexgrid);
-
     this._growPlayerCells();
     this._updatePlayerStats();
+
+    for (const player of this.idToPlayer.values()) {
+      if (player.isAlive()) {
+        player.roundsSurvived++;
+      }
+    }
   }
 
-  _updatePlayerStats(init: boolean = false) {
+  _updatePlayerStats() {
     for (const player of this.idToPlayer.values()) {
-      if (!player.isAlive()) continue;
-      if (!init) player.roundsSurvived++;
       player.ownedHexagonCount = this.hexgrid.hexagons.filter((hex) => hex.ownerId === player.id).length;
       player.totalResources = this.hexgrid.hexagons.reduce(
         (acc, hex) => (hex.ownerId === player.id ? acc + hex.resources : acc),
