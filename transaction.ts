@@ -23,34 +23,26 @@ enum TransactionError {
  * Runs a DFS search for an owned path between the two hexagons.
  * Returns true if such a path exists, otherwise false.
  */
-function doesOwnedPathExists(hexagonIdDict: Map<string, Hexagon>, fromHexId: string, toHexId: string) {
-  const fromHexagon = hexagonIdDict.get(fromHexId);
-  const toHexagon = hexagonIdDict.get(toHexId);
+function doesOwnedPathExists(hexagonIdMap: Map<string, Hexagon>, fromHexId: string, toHexId: string) {
+  const fromHexagon = hexagonIdMap.get(fromHexId);
+  const toHexagon = hexagonIdMap.get(toHexId);
 
   if (fromHexagon === undefined || toHexagon === undefined) {
     return false;
   }
 
-  console.log(hexagonIdDict);
-
   const visited = {};
   const stack = [fromHexagon];
 
   while (stack.length > 0) {
-    console.log(stack);
     const currentHexagon = stack.pop()!; // ! is safe because stack.length > 0
-    console.log(currentHexagon);
-    console.log(currentHexagon.id);
-    console.log('-------------');
     if (currentHexagon.id === toHexagon.id) return true;
     if (currentHexagon.ownerId !== fromHexagon.ownerId) continue;
     visited[currentHexagon.id] = true;
     let c = 0;
     for (const neighbor of currentHexagon.neighbors) {
-      console.log('neighbor #' + c);
-      console.log(neighbor);
       if (!visited[neighbor.id] && neighbor.ownerId === fromHexagon.ownerId) {
-        stack.push(hexagonIdDict[neighbor.id]);
+        stack.push(hexagonIdMap.get(neighbor.id));
       }
     }
   }
