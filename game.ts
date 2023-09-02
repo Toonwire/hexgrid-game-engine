@@ -79,7 +79,7 @@ class Game {
     return this.idToPlayer.get(this.hexgrid.hexagons[0].ownerId) || null;
   }
 
-  update(debug: boolean = false) {
+  update() {
     if (this.isGameOver()) throw GameError.UPDATE_GAME_OVER;
 
     // for each player, get their transaction and validate it
@@ -97,7 +97,6 @@ class Game {
         }
       } catch (e) {
         console.log(`Player ${player.id} threw invalid transaction exception: ${e}`);
-        if (debug) console.trace();
         player.exceptions++;
       }
     }
