@@ -35,7 +35,11 @@ function doesOwnedPathExists(hexagonIdDict: Map<string, Hexagon>, fromHexId: str
   const stack = [fromHexagon];
 
   while (stack.length > 0) {
+    console.log(stack);
     const currentHexagon = stack.pop()!; // ! is safe because stack.length > 0
+    console.log(currentHexagon);
+    console.log(currentHexagon.id);
+    console.log('-------------');
     if (currentHexagon.id === toHexagon.id) return true;
     if (currentHexagon.ownerId !== fromHexagon.ownerId) continue;
     visited[currentHexagon.id] = true;
@@ -84,11 +88,16 @@ class Transaction {
     if (!fromHexagon) throw TransactionError.INVALID_FROM_ID;
     if (!toHexagon) throw TransactionError.INVALID_TO_ID;
     if (fromHexagon === toHexagon) throw TransactionError.SAME_HEXAGON;
-    if (
-      fromHexagon.ownerId === toHexagon.ownerId &&
-      !doesOwnedPathExists(hexgrid.hexagonIdMap, this.fromHexId, this.toHexId)
-    ) {
-      throw TransactionError.OWNED_HEXAGONS_NOT_CONNECTED;
+    try {
+      if (
+        fromHexagon.ownerId === toHexagon.ownerId &&
+        !doesOwnedPathExists(hexgrid.hexagonIdMap, this.fromHexId, this.toHexId)
+      ) {
+        throw TransactionError.OWNED_HEXAGONS_NOT_CONNECTED;
+      }
+    } catch (e) {
+      console.log(e);
+      console.trace();
     }
     if (this.transferAmount < 0) throw TransactionError.NEGATIVE_TRANSFER_AMOUNT;
     if (fromHexagon.resources < this.transferAmount) throw TransactionError.NOT_ENOUGH_RESOURCES;
