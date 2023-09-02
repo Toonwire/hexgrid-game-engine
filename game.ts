@@ -109,6 +109,7 @@ class Game {
 
   _updatePlayerStats() {
     for (const player of this.idToPlayer.values()) {
+      if (!player.isAlive()) continue;
       player.roundsSurvived++;
       player.ownedHexagonCount = this.hexgrid.hexagons.filter((hex) => hex.ownerId === player.id).length;
       player.totalResources = this.hexgrid.hexagons.reduce(
