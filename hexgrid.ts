@@ -1,4 +1,4 @@
-import { HexOwner, NeighborWraparound } from './constants';
+import { NeighborWraparound } from './constants';
 import Cube from './cube';
 import Hexagon from './hexagon';
 import Player from './player';
@@ -117,9 +117,9 @@ class Hexgrid {
     //// ------------------------------
     //// Assign players to hexagons
     //// ------------------------------
+    if (players.length < 1) return;
 
     let playerHexagon = this.cubeToHexMap.get(new Cube(0, 0, 0).toString());
-
     if (!playerHexagon) throw 'Initial player hexagon not found';
 
     playerHexagon.resources = 10;
